@@ -22,7 +22,7 @@
         public var thumbScale:Number;
         
         //Constructor
-        public function MagnifiedImageEvent	(type:String, bytesLoaded:Number = 0.0, bytesTotal:Number = 0.0, contentWidth:uint = 0, contentHeight:uint = 0,	maximumScale:Number = 0.0, magnificationScale:Number = 0.0,	thumbScale:Number = 0.0)
+        public function MagnifiedImageEvent(type:String, bytesLoaded:Number = 0.0, bytesTotal:Number = 0.0, contentWidth:uint = 0, contentHeight:uint = 0, maximumScale:Number = 0.0, magnificationScale:Number = 0.0, thumbScale:Number = 0.0)
         {
             super(type);
             
