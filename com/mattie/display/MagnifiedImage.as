@@ -95,6 +95,7 @@
         private function imageLoaderCompleteEventHandler(evt:Event):void
         {
             evt.currentTarget.removeEventListener(IOErrorEvent.IO_ERROR, imageLoaderErrorEventHandler);
+            evt.currentTarget.removeEventListener(ProgressEvent.PROGRESS, imageLoaderProgressEventHandler);
             evt.currentTarget.removeEventListener(Event.COMPLETE, imageLoaderCompleteEventHandler);
             
             if  (evt.currentTarget.content.width > MAX_BITMAP_MEASUREMENT || evt.currentTarget.content.height > MAX_BITMAP_MEASUREMENT || (evt.currentTarget.content.width * evt.currentTarget.content.height) > MAX_BITMAP_PIXELS)
@@ -173,6 +174,9 @@
             
             if  (imageLoader)
             {
+                if  (imageLoader.contentLoaderInfo.hasEventListener(ProgressEvent.PROGRESS))
+                    imageLoader.close();
+                    
                 imageLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, imageLoaderErrorEventHandler);
                 imageLoader.contentLoaderInfo.removeEventListener(ProgressEvent.PROGRESS, imageLoaderProgressEventHandler);
                 imageLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, imageLoaderCompleteEventHandler);
