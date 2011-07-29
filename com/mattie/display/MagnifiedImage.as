@@ -21,9 +21,9 @@
     public class MagnifiedImage extends Sprite
     {
         //Constants
+        private static const MAX_BITMAP_MEASUREMENT:uint = 7000;
+        private static const MAX_BITMAP_PIXELS:uint = 12250000;
         private static const CACHED_IMAGE_BYTES_TOTAL:String = "cachedImageBytesTotal";
-        private static const MAX_BITMAP_MEASUREMENT:uint = 8191;
-        private static const MAX_BITMAP_PIXELS:uint = 16777215;
         
         //Properties
         public var minimumThumbScale:Number = 0.1;
@@ -119,7 +119,10 @@
             imageHeight = target.height;
             
             maximumScaleProperty = Math.sqrt(MAX_BITMAP_PIXELS / (imageWidth * imageHeight));
-            
+
+            if  (Math.max(imageWidth * maximumScaleProperty, imageHeight * maximumScaleProperty) > MAX_BITMAP_MEASUREMENT)
+                maximumScaleProperty = Math.min(Math.sqrt(MAX_BITMAP_PIXELS / (imageWidth * imageHeight)), MAX_BITMAP_MEASUREMENT / imageWidth, MAX_BITMAP_MEASUREMENT / imageHeight);
+                
             imageBitmapData = new BitmapData(imageWidth, imageHeight);
             imageBitmapData.draw(target);
             
@@ -152,17 +155,17 @@
             dispatchEvent(new MagnifiedImageEvent(MagnifiedImageEvent.LOADER_COMPLETE, imageLoaderContentBytesTotal, imageLoaderContentBytesTotal, imageWidth, imageHeight, maximumScaleProperty, magnificationScaleProperty, thumbScaleProperty));
         }
         
-        //Reposition
+        //Align Components
         public function alignComponents():void
         {
-            loupeProperty.x = (thumbProperty.mouseX * thumbScale) - loupeProperty.width / 2;
-            loupeProperty.y = (thumbProperty.mouseY * thumbScale) - loupeProperty.height / 2;
+            loupeProperty.x = Math.round(thumbProperty.mouseX * thumbScale) - loupeProperty.width / 2;
+            loupeProperty.y = Math.round(thumbProperty.mouseY * thumbScale) - loupeProperty.height / 2;
             
-            loupeMask.x = loupeBaseProperty.x = (thumbProperty.mouseX * thumbScale) - loupeMask.width / 2;
-            loupeMask.y = loupeBaseProperty.y = (thumbProperty.mouseY * thumbScale) - loupeMask.height / 2;
+            loupeMask.x = loupeBaseProperty.x = Math.round(thumbProperty.mouseX * thumbScale) - loupeMask.width / 2;
+            loupeMask.y = loupeBaseProperty.y = Math.round(thumbProperty.mouseY * thumbScale) - loupeMask.height / 2;
             
-            imageProperty.x = 0 - (thumbProperty.mouseX * thumbScale) / thumbProperty.width * (imageProperty.width - thumbProperty.width);
-            imageProperty.y = 0 - (thumbProperty.mouseY * thumbScale) / thumbProperty.height * (imageProperty.height - thumbProperty.height);
+            imageProperty.x = thumbProperty.x + Math.max(0.0, Math.min((Math.round(thumbProperty.mouseX * thumbScale) - 1.0) / (thumbProperty.width - 1.0), 1.0)) * (thumbProperty.width - imageProperty.width);
+            imageProperty.y = thumbProperty.y + Math.max(0.0, Math.min((Math.round(thumbProperty.mouseY * thumbScale) - 1.0) / (thumbProperty.height - 1.0), 1.0)) * (thumbProperty.height - imageProperty.height);
         }
         
         //Dispose
@@ -269,7 +272,7 @@
                 magnificationScaleProperty = Math.max(thumbScaleProperty + minimumMagnificationScale, Math.min(value, maximumScaleProperty));			
                 imageProperty.scaleX = imageProperty.scaleY = magnificationScaleProperty;
                 alignComponents();
-                
+            
                 if  (numChildren != 0)
                     dispatchEvent(new MagnifiedImageEvent(MagnifiedImageEvent.CHANGE, imageLoaderContentBytesTotal, imageLoaderContentBytesTotal, imageWidth, imageHeight, maximumScaleProperty, magnificationScaleProperty, thumbScaleProperty));
             }
