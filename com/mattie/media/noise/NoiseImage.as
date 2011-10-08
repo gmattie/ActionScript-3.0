@@ -3,105 +3,129 @@ package com.mattie.media.noise
     //Imports
     import flash.display.Bitmap;
     import flash.display.BitmapData;
-    import flash.display.BitmapDataChannel;
     import flash.display.Sprite;
     import flash.events.Event;
-    import flash.geom.Matrix;
+    import flash.geom.Point;
+    import flash.geom.Rectangle;
     
     //Class
     public class NoiseImage extends Sprite
     {
+        //Assets
+        [Embed(source = "../assets/StaticSheet.jpg")]
+        private var SpriteSheetAsset:Class;
+        
+        //Constants
+        private static const ZERO_POINT:Point = new Point(0, 0);
+        private static const MAX_INDEX:uint = 60;
+        
         //Properties
         private var widthProperty:uint;
         private var heightProperty:uint;
-        private var zoomProperty:uint;
-        
-        public var grayscale:Boolean;
+        private var isPlayingProperty:Boolean;
         
         //Variables
-        private var image:Sprite;
-        private var imageBitmapData:BitmapData;
-        private var zoomMatrix:Matrix;
+        private var spriteSheet:BitmapData;
+        private var canvas:BitmapData;
+        private var rectangleVector:Vector.<Rectangle>;
+        private var index:uint;
         
         //Constructor
-        public function NoiseImage(width:uint, height:uint, zoom:uint = 2, grayscale:Boolean = true)
+        public function NoiseImage(width:uint, height:uint)
         {
-            this.width = width;
-            this.height = height;
-            this.zoom = zoom;
-            this.grayscale = grayscale;
+            spriteSheet = (new SpriteSheetAsset() as Bitmap).bitmapData;
             
-            init();
+            widthProperty = width;
+            heightProperty = height;
+            
+            draw();
         }
         
-        //Initialize
-        private function init():void
+        //Draw
+        private function draw():void
         {
-            imageBitmapData = new BitmapData(200, 200, false);
+            while (numChildren) removeChildAt(numChildren - 1);
             
-            image = new Sprite();
-            addEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
+            canvas = new BitmapData(widthProperty, heightProperty, false);
+            rectangleVector = new Vector.<Rectangle>;
             
-            addChild(image);
+            for (var i:uint = 0; i < MAX_INDEX; i++)
+                rectangleVector.push(new Rectangle(Math.round(Math.random() * (spriteSheet.width - widthProperty)), Math.round(Math.random() * (spriteSheet.height - heightProperty)), widthProperty, heightProperty));
+            
+            index = 0;
+            canvas.copyPixels(spriteSheet, rectangleVector[index], ZERO_POINT);
+            
+            addChild(new Bitmap(canvas));
+        }
+        
+        //Play
+        public function play():void
+        {
+            if  (!isPlayingProperty)
+            {
+                addEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
+                isPlayingProperty = true;
+            }
+        }
+        
+        //Stop
+        public function stop():void
+        {
+            if  (isPlayingProperty)
+            {
+                removeEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
+                isPlayingProperty = false;   
+            }
         }
         
         //Enter Frame Event Handler
         private function enterFrameEventHandler(evt:Event):void
         {
-            imageBitmapData.noise(Math.random() * int.MAX_VALUE, 0, 255, 7, grayscale);
-            
-            image.graphics.clear();
-            image.graphics.beginBitmapFill(imageBitmapData, zoomMatrix, true);
-            image.graphics.drawRect(0, 0, widthProperty, heightProperty);
+            index == MAX_INDEX - 1 ? index = 0 : index++
+            canvas.copyPixels(spriteSheet, rectangleVector[index], ZERO_POINT);
         }
         
         //Dispose
         public function dispose():void
         {
-            removeEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
+            stop();
             
-            imageBitmapData.dispose();
-            imageBitmapData = null;
-            image = null;
-            zoomMatrix = null;
+            canvas.dispose();
+            spriteSheet.dispose();
+            
+            while (numChildren) removeChildAt(numChildren - 1);
         }
         
-        //Set Width
+        //Width Setter
         override public function set width(value:Number):void
         {
-            widthProperty = value;
+            widthProperty = Math.min(Math.max(0, value), spriteSheet.width);
+            draw();
         }
         
-        //Get Width
+        //Width Getter
         override public function get width():Number
         {
             return widthProperty;
         }
         
-        //Set Height
+        //Height Setter
         override public function set height(value:Number):void
         {
-            heightProperty = value;
+            heightProperty = Math.min(Math.max(0, value), spriteSheet.height);
+            draw();
         }
         
-        //Get Height
+        //Height Getter
         override public function get height():Number
         {
             return heightProperty;
         }
         
-        //Set Zoom
-        public function set zoom(value:uint):void
+        //isPlaying Getter
+        public function get isPlaying():Boolean
         {
-            zoomProperty = Math.max(1, value);
-            
-            zoomMatrix = new Matrix(zoomProperty, 0, 0, zoomProperty)
-        }
-        
-        //Get Zoom
-        public function get zoom():uint
-        {
-            return zoomProperty;
-        }
+            return isPlayingProperty;
+        }       
     }
 }
