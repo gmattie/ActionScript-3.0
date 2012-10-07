@@ -16,47 +16,58 @@ package com.mattie.media.noise
         private var volumeProperty:Number;
         private var volumeLeftProperty:Number;
         private var volumeRightProperty:Number;
-        private var depthProperty:Number;
-        private var depthLeftProperty:Number;
-        private var depthRightProperty:Number;
         
-        public var isPlaying:Boolean;
+        private var pitchProperty:Number;
+        private var pitchLeftProperty:Number;
+        private var pitchRightProperty:Number;
         
         //Variables
         private var sound:Sound;
         private var soundChannel:SoundChannel;
+        
         private var sampleLeft:Number;
         private var sampleRight:Number;
         
+        private var output:Number;
+        
         private var a1Left:Number;
         private var a1Right:Number;
+        
         private var a2Left:Number;
         private var a2Right:Number;
+        
         private var a3Left:Number;
         private var a3Right:Number;
+        
         private var b1Left:Number;
         private var b1Right:Number;
+        
         private var b2Left:Number;
         private var b2Right:Number;
+        
         private var cLeft:Number;
         private var cRight:Number;
-        private var in1Left:Number;
-        private var in1Right:Number;
-        private var in2Left:Number;
-        private var in2Right:Number;
-        private var out1Left:Number;
-        private var out1Right:Number;
-        private var out2Left:Number;
-        private var out2Right:Number;
         
-        private var output:Number;
+        private var input1Left:Number;
+        private var input1Right:Number;
+        
+        private var input2Left:Number;
+        private var input2Right:Number;
+        
+        private var output1Left:Number;
+        private var output1Right:Number;
+        
+        private var output2Left:Number;
+        private var output2Right:Number;
+        
+        private var isPlaying:Boolean;
         private var i:uint;
         
         //Constructor
-        public function NoiseSound(volume:Number = 0.0, depth:Number = 1.0)
+        public function NoiseSound(volume:Number = 0.0, pitch:Number = 1.0)
         {
             this.volume = volume;
-            this.depth = depth;
+            this.pitch = pitch;
             
             init();
         }
@@ -64,7 +75,7 @@ package com.mattie.media.noise
         //Initialize
         private function init():void
         {
-            in1Left = in1Right = in2Left = in2Right = out1Left = out1Right = out2Left = out2Right = 0;
+            input1Left = input1Right = input2Left = input2Right = output1Left = output1Right = output2Left = output2Right = 0;
             
             sound = new Sound();
             sound.addEventListener(SampleDataEvent.SAMPLE_DATA, sampleDataEventHandler);
@@ -88,21 +99,21 @@ package com.mattie.media.noise
         {
             if  (leftChannel)
             {
-                output = a1Left * input + a2Left * in1Left + a3Left * in2Left - b1Left * out1Left - b2Left * out2Left;
+                output = a1Left * input + a2Left * input1Left + a3Left * input2Left - b1Left * output1Left - b2Left * output2Left;
                 
-                in2Left = in1Left;
-                in1Left = input;
-                out2Left = out1Left;
-                out1Left = output; 
+                input2Left = input1Left;
+                input1Left = input;
+                output2Left = output1Left;
+                output1Left = output; 
             }
             else
             {
-                output = a1Right * input + a2Right * in1Right + a3Right * in2Right - b1Right * out1Right - b2Right * out2Right;
+                output = a1Right * input + a2Right * input1Right + a3Right * input2Right - b1Right * output1Right - b2Right * output2Right;
                 
-                in2Right = in1Right;
-                in1Right = input;
-                out2Right = out1Right;
-                out1Right = output;   
+                input2Right = input1Right;
+                input1Right = input;
+                output2Right = output1Right;
+                output1Right = output;   
             }
             
             return output;
@@ -174,24 +185,24 @@ package com.mattie.media.noise
             return volumeRightProperty;
         }
         
-        //Set Depth
-        public function set depth(value:Number):void
+        //Set Pitch
+        public function set pitch(value:Number):void
         {
-            depthProperty = depthLeft = depthRight = Math.max(0.0, Math.min(value, 1.0));
+            pitchProperty = pitchLeft = pitchRight = Math.max(0.0, Math.min(value, 1.0));
         }
         
-        //Get Depth
-        public function get depth():Number
+        //Get Pitch
+        public function get pitch():Number
         {
-            return depthProperty;
+            return pitchProperty;
         }
         
-        //Set Depth Left
-        public function set depthLeft(value:Number):void
+        //Set Pitch Left
+        public function set pitchLeft(value:Number):void
         {
-            depthLeftProperty = Math.max(0.0, Math.min(value, 1.0));
+            pitchLeftProperty = Math.max(0.0, Math.min(value, 1.0));
             
-            cLeft = 1 / Math.tan(Math.PI * Math.max(1.0, Math.min((SAMPLE_RATE / 2 - 1.0) * depthLeftProperty, SAMPLE_RATE / 2 - 1.0)) / SAMPLE_RATE);
+            cLeft = 1 / Math.tan(Math.PI * Math.max(1.0, Math.min((SAMPLE_RATE / 2 - 1.0) * pitchLeftProperty, SAMPLE_RATE / 2 - 1.0)) / SAMPLE_RATE);
             a1Left = 1.0 / (1.0 + Math.SQRT2 * cLeft + cLeft * cLeft);
             a2Left = 2 * a1Left;
             a3Left = a1Left;
@@ -199,18 +210,18 @@ package com.mattie.media.noise
             b2Left = (1.0 - Math.SQRT2 * cLeft + cLeft * cLeft) * a1Left;
         }
         
-        //Get Depth Left
-        public function get depthLeft():Number
+        //Get Pitch Left
+        public function get pitchLeft():Number
         {
-            return depthLeftProperty;
+            return pitchLeftProperty;
         }
         
-        //Set Depth Right
-        public function set depthRight(value:Number):void
+        //Set Pitch Right
+        public function set pitchRight(value:Number):void
         {
-            depthRightProperty = Math.max(0.0, Math.min(value, 1.0));
+            pitchRightProperty = Math.max(0.0, Math.min(value, 1.0));
             
-            cRight = 1 / Math.tan(Math.PI * Math.max(1.0, Math.min((SAMPLE_RATE / 2 - 1.0) * depthRightProperty, SAMPLE_RATE / 2 - 1.0)) / SAMPLE_RATE);
+            cRight = 1 / Math.tan(Math.PI * Math.max(1.0, Math.min((SAMPLE_RATE / 2 - 1.0) * pitchRightProperty, SAMPLE_RATE / 2 - 1.0)) / SAMPLE_RATE);
             a1Right = 1.0 / (1.0 + Math.SQRT2 * cRight + cRight * cRight);
             a2Right = 2 * a1Right;
             a3Right = a1Right;
@@ -218,10 +229,10 @@ package com.mattie.media.noise
             b2Right = (1.0 - Math.SQRT2 * cRight + cRight * cRight) * a1Right;
         }
         
-        //Get Depth Right
-        public function get depthRight():Number
+        //Get Pitch Right
+        public function get pitchRight():Number
         {
-            return depthRightProperty;
+            return pitchRightProperty;
         }
     }
 }

@@ -7,14 +7,11 @@ package com.mattie.media.noise
     import flash.events.Event;
     import flash.geom.Point;
     import flash.geom.Rectangle;
+    import flash.system.Capabilities;
     
     //Class
     public class NoiseImage extends Sprite
     {
-        //Assets
-        [Embed(source = "../assets/StaticSheet.jpg")]
-        private var SpriteSheetAsset:Class;
-        
         //Constants
         private static const ZERO_POINT:Point = new Point(0, 0);
         private static const MAX_INDEX:uint = 60;
@@ -22,67 +19,76 @@ package com.mattie.media.noise
         //Properties
         private var widthProperty:uint;
         private var heightProperty:uint;
-        private var isPlayingProperty:Boolean;
         
         //Variables
-        private var spriteSheet:BitmapData;
+        private var screenWidth:int;
+        private var screenHeight:int;
+        private var bitmapNoise:BitmapData;
         private var canvas:BitmapData;
         private var rectangleVector:Vector.<Rectangle>;
         private var index:uint;
+        private var isPlaying:Boolean;
         
         //Constructor
-        public function NoiseImage(width:uint, height:uint)
+        public function NoiseImage()
         {
-            spriteSheet = (new SpriteSheetAsset() as Bitmap).bitmapData;
+            screenWidth = Capabilities.screenResolutionX * 2;
+            screenHeight = Capabilities.screenResolutionY * 2;
             
-            widthProperty = width;
-            heightProperty = height;
-            
-            draw();
+            bitmapNoise = new BitmapData(screenWidth, screenHeight, false);
+            bitmapNoise.noise(Math.random() * int.MAX_VALUE, 0, 255, 0, true);
         }
         
         //Draw
         private function draw():void
         {
-            while (numChildren) removeChildAt(numChildren - 1);
-            
-            canvas = new BitmapData(widthProperty, heightProperty, false);
-            rectangleVector = new Vector.<Rectangle>;
-            
-            for (var i:uint = 0; i < MAX_INDEX; i++)
-                rectangleVector.push(new Rectangle(Math.round(Math.random() * (spriteSheet.width - widthProperty)), Math.round(Math.random() * (spriteSheet.height - heightProperty)), widthProperty, heightProperty));
-            
-            index = 0;
-            canvas.copyPixels(spriteSheet, rectangleVector[index], ZERO_POINT);
-            
-            addChild(new Bitmap(canvas));
+            if (widthProperty != 0 && heightProperty != 0)
+            {
+                while (numChildren)
+                {
+                    removeChildAt(numChildren - 1);
+                }
+                
+                canvas = new BitmapData(widthProperty, heightProperty, false);
+                rectangleVector = new Vector.<Rectangle>;
+                
+                for (var i:uint = 0; i < MAX_INDEX; i++)
+                {
+                    rectangleVector.push(new Rectangle(Math.round(Math.random() * (bitmapNoise.width - widthProperty)), Math.round(Math.random() * (bitmapNoise.height - heightProperty)), widthProperty, heightProperty));
+                }
+                
+                index = 0;
+                canvas.copyPixels(bitmapNoise, rectangleVector[index], ZERO_POINT);
+                
+                addChild(new Bitmap(canvas));
+            }
         }
         
         //Play
         public function play():void
         {
-            if  (!isPlayingProperty)
+            if  (!isPlaying)
             {
                 addEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
-                isPlayingProperty = true;
+                isPlaying = true;
             }
         }
         
         //Stop
         public function stop():void
         {
-            if  (isPlayingProperty)
+            if  (isPlaying)
             {
                 removeEventListener(Event.ENTER_FRAME, enterFrameEventHandler);
-                isPlayingProperty = false;   
+                isPlaying = false;   
             }
         }
         
         //Enter Frame Event Handler
         private function enterFrameEventHandler(evt:Event):void
         {
-            index == MAX_INDEX - 1 ? index = 0 : index++
-            canvas.copyPixels(spriteSheet, rectangleVector[index], ZERO_POINT);
+            (index == MAX_INDEX - 1) ? index = 0 : index++
+            canvas.copyPixels(bitmapNoise, rectangleVector[index], ZERO_POINT);
         }
         
         //Dispose
@@ -91,41 +97,38 @@ package com.mattie.media.noise
             stop();
             
             canvas.dispose();
-            spriteSheet.dispose();
+            bitmapNoise.dispose();
             
-            while (numChildren) removeChildAt(numChildren - 1);
+            while (numChildren)
+            {
+                removeChildAt(numChildren - 1);
+            }
         }
         
-        //Width Setter
+        //Set Width
         override public function set width(value:Number):void
         {
-            widthProperty = Math.min(Math.max(0, value), spriteSheet.width);
+            widthProperty = Math.min(Math.max(0, value), bitmapNoise.width);
             draw();
         }
         
-        //Width Getter
+        //Get Width
         override public function get width():Number
         {
             return widthProperty;
         }
         
-        //Height Setter
+        //Set Height
         override public function set height(value:Number):void
         {
-            heightProperty = Math.min(Math.max(0, value), spriteSheet.height);
+            heightProperty = Math.min(Math.max(0, value), bitmapNoise.height);
             draw();
         }
         
-        //Height Getter
+        //Get Height
         override public function get height():Number
         {
             return heightProperty;
-        }
-        
-        //isPlaying Getter
-        public function get isPlaying():Boolean
-        {
-            return isPlayingProperty;
-        }       
+        }      
     }
 }
