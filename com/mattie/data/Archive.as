@@ -97,15 +97,16 @@ package com.mattie.data
             
             if (oldValue != value)
             {
-                var constructorString:String = String(value.constructor);
-                constructorString = constructorString.substring(constructorString.lastIndexOf(" ") + 1, constructorString.length - 1);
-                
                 var item:Item = new Item();
                 item.encrypted = encrypted;
-                item.value = constructorString;
                 
                 if (encrypted)
                 {
+                    var constructorString:String = String(value.constructor);
+                    constructorString = constructorString.substring(constructorString.lastIndexOf(" ") + 1, constructorString.length - 1);
+                    
+                    item.value = constructorString;
+                    
                     var bytes:ByteArray = new ByteArray();
                     
                     switch (value.constructor)
@@ -137,8 +138,8 @@ package com.mattie.data
             }
         }
         
-        //Delete Item
-        public function deleteItem(key:String, autoSave:Boolean = false):void
+        //Remove
+        public function remove(key:String, autoSave:Boolean = false):void
         {
             if (data[key] != undefined)
             {
@@ -160,8 +161,8 @@ package com.mattie.data
             }
         }
         
-        //Contains Item
-        public function containsItem(key:String):Boolean
+        //Contains
+        public function contains(key:String):Boolean
         {
             return (data[key] != undefined);
         }
