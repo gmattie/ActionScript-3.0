@@ -7,7 +7,6 @@ package com.mattie.media.noise
     import flash.events.Event;
     import flash.geom.Point;
     import flash.geom.Rectangle;
-    import flash.system.Capabilities;
     
     //Class
     public class NoiseImage extends Sprite
