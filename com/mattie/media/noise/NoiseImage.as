@@ -21,8 +21,6 @@ package com.mattie.media.noise
         private var heightProperty:uint;
         
         //Variables
-        private var screenWidth:int;
-        private var screenHeight:int;
         private var bitmapNoise:BitmapData;
         private var canvas:BitmapData;
         private var rectangleVector:Vector.<Rectangle>;
@@ -30,12 +28,9 @@ package com.mattie.media.noise
         private var isPlaying:Boolean;
         
         //Constructor
-        public function NoiseImage()
+        public function NoiseImage(maxWidth:uint, maxHeight:uint)
         {
-            screenWidth = Capabilities.screenResolutionX * 2;
-            screenHeight = Capabilities.screenResolutionY * 2;
-            
-            bitmapNoise = new BitmapData(screenWidth, screenHeight, false);
+            bitmapNoise = new BitmapData(maxWidth * 2, maxHeight * 2, false);
             bitmapNoise.noise(Math.random() * int.MAX_VALUE, 0, 255, 0, true);
         }
         
