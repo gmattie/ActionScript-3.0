@@ -121,6 +121,16 @@ package starling.extensions
 				m_Canvas.y -= m_TextureHeight;
 			}
 		}
+		
+		//Dispose
+		override public function dispose():void
+		{
+			stop();
+			
+			m_Texture.dispose();
+			
+			super.dispose();
+		}
 
 		//Get isAnimating
 		public function get isAnimating():Boolean
