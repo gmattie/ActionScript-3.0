@@ -12,6 +12,11 @@ package starling.extensions
 	//Class
 	public class Vignette extends DisplayObjectContainer
 	{
+		//Constants
+		public static const LOW_STRENGTH:uint = 6;
+		public static const MEDIUM_STRENGTH:uint = 7;
+		public static const HIGH_STRENGTH:uint = 8;
+		
 		//Properties
 		private var m_Width:Number;
 		private var m_Height:Number;
@@ -28,7 +33,7 @@ package starling.extensions
 		private var m_IsInstantiated:Boolean;
 		
 		//Constructor
-		public function Vignette(width:Number, height:Number, amount:Number = 0.25, strength:uint = 7, color:uint = 0x000000)
+		public function Vignette(width:Number, height:Number, amount:Number = 0.25, strength:uint = Vignette.MEDIUM_STRENGTH, color:uint = 0x000000)
 		{
 			this.width = width;
 			this.height = height;
@@ -185,7 +190,7 @@ package starling.extensions
 		//Set Strength
 		public function set strength(value:uint):void
 		{
-			m_Strength = Math.max(0, Math.min(value, 8));
+			m_Strength = Math.max(6, Math.min(value, 8));
 			
 			if (m_IsInstantiated) draw();
 		}
