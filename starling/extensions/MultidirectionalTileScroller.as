@@ -49,7 +49,7 @@ package starling.extensions
 			image.scaleX = m_TextureScaleX;
 			image.scaleY = m_TextureScaleY;
 			
-			m_Canvas = new QuadBatch;
+			m_Canvas = new QuadBatch();
 			
 			for (var columns:uint = 0; columns <= Math.ceil(m_Width / (textureNativeWidth * m_TextureScaleX)) + 1; columns++)
 			{
