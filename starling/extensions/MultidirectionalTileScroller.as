@@ -44,24 +44,28 @@ package starling.extensions
 		//Init
 		private function init():void
 		{
+			var textureNativeWidth:Number = m_Texture.nativeWidth;
+			var textureNativeHeight:Number = m_Texture.nativeHeight;
+			
+			var image:Image = new Image(m_Texture);
+			image.scaleX = m_TextureScaleX;
+			image.scaleY = m_TextureScaleY;
+			
 			m_Canvas = new QuadBatch;
 			
-			for (var columns:uint = 0; columns <= Math.ceil(m_Width / (m_Texture.nativeWidth * m_TextureScaleX)) + 1; columns++)
+			for (var columns:uint = 0; columns <= Math.ceil(m_Width / (textureNativeWidth * m_TextureScaleX)) + 1; columns++)
 			{
-				for (var rows:uint = 0; rows <= Math.ceil(m_Height / (m_Texture.nativeHeight * m_TextureScaleY)) + 1; rows++)
+				for (var rows:uint = 0; rows <= Math.ceil(m_Height / (textureNativeHeight * m_TextureScaleY)) + 1; rows++)
 				{
-					var image:Image = new Image(m_Texture);
-					image.scaleX = m_TextureScaleX;
-					image.scaleY = m_TextureScaleY;
-					image.x = m_Texture.nativeWidth * m_TextureScaleX * columns;
-					image.y = m_Texture.nativeHeight * m_TextureScaleY * rows;
+					image.x = textureNativeWidth * m_TextureScaleX * columns;
+					image.y = textureNativeHeight * m_TextureScaleY * rows;
 			
 					m_Canvas.addImage(image);
 				}
 			}
 			
-			m_TextureWidth = m_Texture.nativeWidth * m_TextureScaleX;
-			m_TextureHeight = m_Texture.nativeHeight * m_TextureScaleY;
+			m_TextureWidth = textureNativeWidth * m_TextureScaleX;
+			m_TextureHeight = textureNativeHeight * m_TextureScaleY;
 			
 			m_PivotPoint = new Point(m_Width / 2, m_Height / 2);
 			
