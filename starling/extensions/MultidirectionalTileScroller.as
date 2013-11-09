@@ -126,8 +126,6 @@ package starling.extensions
 		{
 			stop();
 			
-			m_Texture.dispose();
-			
 			super.dispose();
 		}
 
