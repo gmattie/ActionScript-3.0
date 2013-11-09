@@ -4,7 +4,7 @@ package starling.extensions
 	import flash.geom.Point;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
-	import starling.display.Sprite;
+	import starling.display.QuadBatch;
 	import starling.events.EnterFrameEvent;
 	import starling.textures.Texture;
 
@@ -12,7 +12,7 @@ package starling.extensions
 	public class MultidirectionalTileScroller extends DisplayObjectContainer
 	{
 		//Properties
-		private var m_Canvas:Sprite;
+		private var m_Canvas:QuadBatch;
 		private var m_Width:uint;
 		private var m_Height:uint;
 		private var m_PivotPoint:Point;
@@ -44,7 +44,7 @@ package starling.extensions
 		//Init
 		private function init():void
 		{
-			m_Canvas = new Sprite();
+			m_Canvas = new QuadBatch;
 			
 			for (var columns:uint = 0; columns <= Math.ceil(m_Width / (m_Texture.nativeWidth * m_TextureScaleX)) + 1; columns++)
 			{
@@ -56,7 +56,7 @@ package starling.extensions
 					image.x = m_Texture.nativeWidth * m_TextureScaleX * columns;
 					image.y = m_Texture.nativeHeight * m_TextureScaleY * rows;
 			
-					m_Canvas.addChild(image);
+					m_Canvas.addImage(image);
 				}
 			}
 			
@@ -68,7 +68,6 @@ package starling.extensions
 			m_Canvas.x = m_PivotPoint.x;
 			m_Canvas.y = m_PivotPoint.y;
 			m_Canvas.alignPivot();
-			m_Canvas.flatten();
 			
 			addChild(m_Canvas);
 		}
