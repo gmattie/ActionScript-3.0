@@ -17,7 +17,6 @@ package starling.extensions
 		private var m_Height:uint;
 		private var m_PivotPoint:Point;
 		
-		private var m_Texture:Texture;
 		private var m_TextureScaleX:Number;
 		private var m_TextureScaleY:Number;
 		private var m_TextureWidth:Number;
@@ -32,22 +31,21 @@ package starling.extensions
 		{
 			m_Width = width;
 			m_Height = height;
-			m_Texture = texture;
 			m_TextureScaleX = textureScaleX;
 			m_TextureScaleY = textureScaleY;
 			
 			touchable = false;
 			
-			init();
+			init(texture);
 		}
 		
 		//Init
-		private function init():void
+		private function init(texture:Texture):void
 		{
-			var textureNativeWidth:Number = m_Texture.nativeWidth;
-			var textureNativeHeight:Number = m_Texture.nativeHeight;
+			var textureNativeWidth:Number = texture.nativeWidth;
+			var textureNativeHeight:Number = texture.nativeHeight;
 			
-			var image:Image = new Image(m_Texture);
+			var image:Image = new Image(texture);
 			image.scaleX = m_TextureScaleX;
 			image.scaleY = m_TextureScaleY;
 			
