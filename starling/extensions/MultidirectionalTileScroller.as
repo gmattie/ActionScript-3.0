@@ -82,7 +82,10 @@ package starling.extensions
 			
 			m_IsAnimating = true;
 			
-			m_Canvas.addEventListener(EnterFrameEvent.ENTER_FRAME, enterFrameEventHandler);
+			if (!m_Canvas.hasEventListener(EnterFrameEvent.ENTER_FRAME))
+			{
+				m_Canvas.addEventListener(EnterFrameEvent.ENTER_FRAME, enterFrameEventHandler);
+			}
 		}
 		
 		//Stop
