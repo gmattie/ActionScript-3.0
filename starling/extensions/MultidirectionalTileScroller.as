@@ -15,13 +15,17 @@ package starling.extensions
 		private var m_Canvas:QuadBatch;
 		private var m_Width:uint;
 		private var m_Height:uint;
-		private var m_PivotPoint:Point;
+		private var m_Texture:Texture;
+		private var m_Image:Image;
 		
+		private var m_TextureNativeWidth:Number;
+		private var m_TextureNativeHeight:Number;
 		private var m_TextureScaleX:Number;
 		private var m_TextureScaleY:Number;
 		private var m_TextureWidth:Number;
 		private var m_TextureHeight:Number;
 
+		private var m_PivotPoint:Point;
 		private var m_IsAnimating:Boolean;
 		private var m_Speed:Number;
 		private var m_Angle:Number;
@@ -31,51 +35,64 @@ package starling.extensions
 		{
 			m_Width = width;
 			m_Height = height;
+			m_Texture = texture;
 			m_TextureScaleX = textureScaleX;
 			m_TextureScaleY = textureScaleY;
 			
-			touchable = false;
-			
-			init(texture);
+			init();
 		}
 		
 		//Init
-		private function init(texture:Texture):void
+		private function init():void
 		{
-			var textureNativeWidth:Number = texture.nativeWidth;
-			var textureNativeHeight:Number = texture.nativeHeight;
+			touchable = false;
 			
-			var image:Image = new Image(texture);
-			image.scaleX = m_TextureScaleX;
-			image.scaleY = m_TextureScaleY;
+			drawTexture();
+		}
+		
+		//Draw Texture
+		private function drawTexture():void
+		{
+			m_TextureNativeWidth = m_Texture.nativeWidth;
+			m_TextureNativeHeight = m_Texture.nativeHeight;
 			
+			m_Image = new Image(m_Texture);
+			m_Image.scaleX = m_TextureScaleX;
+			m_Image.scaleY = m_TextureScaleY;
+			
+			drawCanvas();
+		}
+		
+		//Draw Canvas
+		private function drawCanvas():void
+		{
+			if (numChildren) removeChildren();
+
 			m_Canvas = new QuadBatch();
 			
-			for (var columns:uint = 0; columns <= Math.ceil(m_Width / (textureNativeWidth * m_TextureScaleX)) + 1; columns++)
+			for (var columns:uint = 0; columns <= Math.ceil(m_Width / (m_TextureNativeWidth * m_TextureScaleX)) + 1; columns++)
 			{
-				for (var rows:uint = 0; rows <= Math.ceil(m_Height / (textureNativeHeight * m_TextureScaleY)) + 1; rows++)
+				for (var rows:uint = 0; rows <= Math.ceil(m_Height / (m_TextureNativeHeight * m_TextureScaleY)) + 1; rows++)
 				{
-					image.x = textureNativeWidth * m_TextureScaleX * columns;
-					image.y = textureNativeHeight * m_TextureScaleY * rows;
+					m_Image.x = m_TextureNativeWidth * m_TextureScaleX * columns;
+					m_Image.y = m_TextureNativeHeight * m_TextureScaleY * rows;
 			
-					m_Canvas.addImage(image);
+					m_Canvas.addImage(m_Image);
 				}
 			}
 			
-			m_TextureWidth = textureNativeWidth * m_TextureScaleX;
-			m_TextureHeight = textureNativeHeight * m_TextureScaleY;
+			m_TextureWidth = m_TextureNativeWidth * m_TextureScaleX;
+			m_TextureHeight = m_TextureNativeHeight * m_TextureScaleY;
 			
 			m_PivotPoint = new Point(m_Width / 2, m_Height / 2);
-			
-			m_Canvas.x = m_PivotPoint.x;
-			m_Canvas.y = m_PivotPoint.y;
+
 			m_Canvas.alignPivot();
 			
 			addChild(m_Canvas);
 		}
 		
-		//Start
-		public function start(speed:Number = NaN, angle:Number = NaN):void
+		//Play
+		public function play(speed:Number = NaN, angle:Number = NaN):void
 		{
 			this.speed = (isNaN(speed)) ? this.speed : speed;
 			this.angle = (isNaN(speed)) ? this.angle : angle;
@@ -131,13 +148,32 @@ package starling.extensions
 		{
 			stop();
 			
+			m_Texture.dispose();
+			
 			super.dispose();
 		}
-
-		//Get isAnimating
-		public function get isAnimating():Boolean
+		
+		//Set Texture
+		public function setTexture(texture:Texture, textureScaleX:Number = 1.0, textureScaleY:Number = 1.0):void
 		{
-			return m_IsAnimating;
+			if (isAnimating) stop();
+			
+			if (m_Texture) m_Texture.dispose();
+			
+			m_Texture = texture;
+			m_TextureScaleX = textureScaleX;
+			m_TextureScaleY = m_TextureScaleY;
+			
+			drawTexture();
+		}
+		
+		//Set Size
+		public function setSize(width:uint, height:uint):void
+		{
+			m_Width = width;
+			m_Height = height;
+			
+			drawCanvas();
 		}
 		
 		//Set Speed
@@ -162,6 +198,12 @@ package starling.extensions
 		public function get angle():Number
 		{
 			return 180 - m_Angle * 180 / Math.PI;
+		}
+		
+		//Get isAnimating
+		public function get isAnimating():Boolean
+		{
+			return m_IsAnimating;
 		}
 	}
 }
