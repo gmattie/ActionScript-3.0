@@ -87,6 +87,8 @@ package starling.extensions
 			m_PivotPoint = new Point(m_Width / 2, m_Height / 2);
 
 			m_Canvas.alignPivot();
+			m_Canvas.x = m_PivotPoint.x;
+			m_Canvas.y = m_PivotPoint.y;
 			
 			addChild(m_Canvas);
 		}
