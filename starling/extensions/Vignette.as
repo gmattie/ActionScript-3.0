@@ -4,13 +4,12 @@ package starling.extensions
 	import flash.display.BitmapData;
 	import flash.display.Shape;
 	import flash.filters.BlurFilter;
-	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.textures.Texture;
 	
 	//Class
-	public class Vignette extends DisplayObjectContainer
+	public class Vignette extends Sprite
 	{
 		//Constants
 		public static const LOW_STRENGTH:uint = 6;
@@ -23,23 +22,24 @@ package starling.extensions
 		private var m_Amount:Number;
 		private var m_Strength:uint;
 		private var m_Color:uint;
+		private var m_Translucence:Number;
 
 		private var m_VignetteShape:Shape;
 		private var m_VignetteShapeBlurFilter:BlurFilter;
 		private var m_VignetteBitmapData:BitmapData;
 		private var m_VignetteTexture:Texture;
-		private var m_Vignette:Sprite;
 		
 		private var m_IsInstantiated:Boolean;
 		
 		//Constructor
-		public function Vignette(width:Number, height:Number, amount:Number = 0.25, strength:uint = Vignette.MEDIUM_STRENGTH, color:uint = 0x000000)
+		public function Vignette(width:Number, height:Number, amount:Number = 0.25, strength:uint = Vignette.MEDIUM_STRENGTH, color:uint = 0x000000, translucence = 0.5)
 		{
 			this.width = width;
 			this.height = height;
 			this.amount = amount;
 			this.strength = strength;
 			this.color = color;
+			this.translucence = translucence;
 			
 			init();
 		}
@@ -52,7 +52,6 @@ package starling.extensions
 			
 			m_VignetteShape = new Shape();
 			m_VignetteShapeBlurFilter = new BlurFilter();
-			m_Vignette = new Sprite();
 			
 			draw();
 		}
@@ -64,7 +63,7 @@ package starling.extensions
 			
 			m_VignetteShape.filters = [];
 			m_VignetteShape.graphics.clear();
-			m_VignetteShape.graphics.beginFill(m_Color, 1.0);
+			m_VignetteShape.graphics.beginFill(m_Color, m_Translucence);
 			m_VignetteShape.graphics.drawRect(-m_Width / 2, -m_Height / 2, m_Width * 2, m_Height * 2);
 			m_VignetteShape.graphics.drawEllipse(vignetteAmount, vignetteAmount, m_Width - vignetteAmount * 2, m_Height - vignetteAmount * 2);
 			m_VignetteShape.graphics.endFill();
@@ -82,14 +81,14 @@ package starling.extensions
 			
 			m_VignetteTexture = Texture.fromBitmapData(m_VignetteBitmapData, false);
 			
-			if (m_Vignette.numChildren)
+			if (numChildren)
 			{
-				m_Vignette.unflatten();
+				unflatten();
 				
-				while (m_Vignette.numChildren > 0)
+				while (numChildren > 0)
 				{
-					m_Vignette.getChildAt(0).dispose();
-					m_Vignette.removeChildAt(0);					
+					getChildAt(0).dispose();
+					removeChildAt(0);					
 				}				
 			}
 			
@@ -106,6 +105,7 @@ package starling.extensions
 								
 					case 2:		vignetteCorner.scaleY = -1.0;
 								vignetteCorner.y = m_Height;
+								
 								break;
 								
 					case 3:		vignetteCorner.scaleX = -1.0;
@@ -114,15 +114,10 @@ package starling.extensions
 								vignetteCorner.y = m_Height;
 				}
 				
-				m_Vignette.addChild(vignetteCorner);
+				addChild(vignetteCorner);
 			}			
 
-			m_Vignette.flatten();
-			
-			if (!contains(m_Vignette))
-			{
-				addChild(m_Vignette);				
-			}
+			flatten();
 		}
 		
 		//Dispose
@@ -213,6 +208,20 @@ package starling.extensions
 		public function get color():uint
 		{
 			return m_Color;
+		}
+		
+		//Set Translucence
+		public function set translucence(value:Number):void
+		{
+			m_Translucence = Math.max(0.0, Math.min(value, 1.0));
+			
+			if (m_IsInstantiated) draw();
+		}
+		
+		//Get Translucence
+		public function get translucence():Number
+		{
+			return m_Translucence;
 		}
 	}
 }
