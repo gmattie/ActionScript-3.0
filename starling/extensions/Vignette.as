@@ -34,8 +34,6 @@ package starling.extensions
 		//Constructor
 		public function Vignette(width:Number, height:Number, amount:Number = 0.25, strength:uint = Vignette.MEDIUM_STRENGTH, color:uint = 0x000000, translucence = 0.5)
 		{
-			alpha = 0.999;
-			
 			this.width = width;
 			this.height = height;
 			this.amount = amount;
@@ -85,8 +83,6 @@ package starling.extensions
 			
 			if (numChildren)
 			{
-				unflatten();
-				
 				while (numChildren > 0)
 				{
 					getChildAt(0).dispose();
@@ -118,8 +114,6 @@ package starling.extensions
 				
 				addChild(vignetteCorner);
 			}			
-
-			flatten();
 		}
 		
 		//Dispose
