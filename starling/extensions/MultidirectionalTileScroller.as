@@ -4,7 +4,7 @@ package starling.extensions
 	import flash.geom.Point;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
-	import starling.display.QuadBatch;
+	import starling.display.MeshBatch;
 	import starling.events.EnterFrameEvent;
 	import starling.textures.Texture;
 
@@ -12,7 +12,7 @@ package starling.extensions
 	public class MultidirectionalTileScroller extends DisplayObjectContainer
 	{
 		//Properties
-		private var m_Canvas:QuadBatch;
+		private var m_Canvas:MeshBatch;
 		private var m_Width:uint;
 		private var m_Height:uint;
 		private var m_Texture:Texture;
@@ -68,7 +68,7 @@ package starling.extensions
 		{
 			if (numChildren) removeChildren();
 
-			m_Canvas = new QuadBatch();
+			m_Canvas = new MeshBatch();
 			
 			for (var columns:uint = 0; columns <= Math.ceil(m_Width / (m_TextureNativeWidth * m_TextureScaleX)) + 1; columns++)
 			{
@@ -77,7 +77,7 @@ package starling.extensions
 					m_Image.x = m_TextureNativeWidth * m_TextureScaleX * columns;
 					m_Image.y = m_TextureNativeHeight * m_TextureScaleY * rows;
 			
-					m_Canvas.addImage(m_Image);
+					m_Canvas.addMesh(m_Image);
 				}
 			}
 			
@@ -158,9 +158,15 @@ package starling.extensions
 		//Set Texture
 		public function setTexture(texture:Texture, textureScaleX:Number = 1.0, textureScaleY:Number = 1.0):void
 		{
-			if (isAnimating) stop();
+			if (isAnimating)
+			{
+				stop();
+			}
 			
-			if (m_Texture) m_Texture.dispose();
+			if (m_Texture)
+			{
+				m_Texture.dispose();
+			}
 			
 			m_Texture = texture;
 			m_TextureScaleX = textureScaleX;
